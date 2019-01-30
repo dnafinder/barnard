@@ -239,9 +239,7 @@ clear A idx
 
 PV=max(P); %The p-value is tha max value of the P vector;
 np=npa(P==PV); %The nuisance parameter is the value of the npa array coinciding with PMax
-if flip==1
-    np=1-np;
-end
+
 %display results
 disp(table(Tbx,B,TX0,np,PV,min(2*PV,1),...
     'VariableNames',{'Tables','Size','Wald_stat','Nuisance','one_tailed_p_value','two_tailed_p_value'}));
@@ -257,11 +255,7 @@ if plts
     figure('Color',[1 1 1],'outerposition',get(groot,'ScreenSize'));
     subplot(1,2,1)
     hold on; 
-    if flip==0
-        patch([0 npa 1],[0 P 0],'b');
-    else
-        patch([0 npa 1],[0 fliplr(P) 0],'b');
-    end
+    patch([0 npa 1],[0 P 0],'b');
     plot([0 np],[PV PV],'k--'); 
     plot([np np],[0 PV],'w--'); 
     plot(np,PV,'ro','MarkerFaceColor','red'); 
