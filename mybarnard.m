@@ -34,7 +34,7 @@ function STATS=mybarnard(x,varargin)
 %Barnard suggested that we calculate p(np) for all possible values of np€(0,1)
 %and choose the value, np*, say, that maximizes p(np): PB=sup{p(np): np€(0,1)}.
 %
-%   Syntax: function [STATS]=mybarnard(x,plts,Tbx,plts) 
+%   Syntax: function [STATS]=mybarnard(x,plts,Tbx) 
 %      
 %      
 %     Inputs:
@@ -88,6 +88,14 @@ Tbx=p.Results.Tbx; plts=p.Results.plts;
 clear p
 
 Cs=sum(x); N=sum(Cs); %Columns sum and total observed elements
+%Rearrange the matrix if necessary.
+flip=0;
+if ~issorted(Cs)
+     x=fliplr(x);
+     Cs=sort(Cs);
+     flip=1;
+end
+
 %First of all, we must compute the Wald's statistic.
 %           T(X) = (p(a) - p(b))/sqrt(p*(1-p)*((1/Cs1)+(1/Cs2))),
 %   where:
@@ -231,7 +239,9 @@ clear A idx
 
 PV=max(P); %The p-value is tha max value of the P vector;
 np=npa(P==PV); %The nuisance parameter is the value of the npa array coinciding with PMax
-
+if flip==1
+    np=1-np;
+end
 %display results
 disp(table(Tbx,B,TX0,np,PV,min(2*PV,1),...
     'VariableNames',{'Tables','Size','Wald_stat','Nuisance','one_tailed_p_value','two_tailed_p_value'}));
@@ -247,7 +257,11 @@ if plts
     figure('Color',[1 1 1],'outerposition',get(groot,'ScreenSize'));
     subplot(1,2,1)
     hold on; 
-    patch(npa,P,'b');
+    if flip==0
+        patch([0 npa 1],[0 P 0],'b');
+    else
+        patch([0 npa 1],[0 fliplr(P) 0],'b');
+    end
     plot([0 np],[PV PV],'k--'); 
     plot([np np],[0 PV],'w--'); 
     plot(np,PV,'ro','MarkerFaceColor','red'); 
